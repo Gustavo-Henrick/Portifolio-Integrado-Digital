@@ -1,0 +1,16 @@
+ import {Link} from "react-router-dom"
+ import "./Style.css"
+ 
+ function Menu(){
+   
+    return(
+        <nav>
+         
+         <Link className="Home">Home</Link>
+
+         
+        </nav>
+    )
+ }
+
+ export default Menu
