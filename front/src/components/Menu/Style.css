@@ -1,8 +1,15 @@
 nav{
     background-color: black;
-   width: 100%;
-   align-items: center;
+   width: 100%;  
 }
+
 .Home{
-    
+    text-decoration: none;
+    color: white;
+    width: 10px;
+    height: 8px;
+}
+
+.Home:hover{
+    color: blue;
 }

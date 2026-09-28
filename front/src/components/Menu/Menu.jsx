@@ -6,7 +6,7 @@
     return(
         <nav>
          
-         <Link className="Home">Home</Link>
+         <Link className="Home">HOME</Link>
 
          
         </nav>
