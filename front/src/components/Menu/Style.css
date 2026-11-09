@@ -16,3 +16,17 @@ nav{
 .Home:hover{
     color: blue;
 }
+
+.Sesi{
+    text-decoration: none;
+    color: white;
+    width: 15px;
+    height: 12px;
+    
+    margin-left: 3rem;
+}
+
+.Sesi:hover{
+    color: blue;
+}
+
