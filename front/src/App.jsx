@@ -1,4 +1,4 @@
-import Senai from "./pages/Senai/Home.jsx"
+import Senai from "./pages/Senai/Senai.jsx"
 import Sesi from "./pages/Sesi/Sesi.jsx"
 import Home from "./pages/Home/Home.jsx"
 import {Route, Routes} from "react-router-dom"
