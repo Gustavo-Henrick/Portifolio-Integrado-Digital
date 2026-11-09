@@ -1,3 +1,4 @@
+import Senai from "./pages/Senai/Home.jsx"
 import Sesi from "./pages/Sesi/Sesi.jsx"
 import Home from "./pages/Home/Home.jsx"
 import {Route, Routes} from "react-router-dom"
@@ -12,6 +13,7 @@ function App() {
   <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/sesi" element={<Sesi />} />
+    <Route path="/senai" element={<Senai />} />
   </Routes>
   </>
   )

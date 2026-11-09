@@ -24,9 +24,22 @@ nav{
     height: 12px;
     
     margin-left: 3rem;
+    margin-right: 6rem;
 }
 
 .Sesi:hover{
     color: blue;
 }
 
+.Senai{
+    text-decoration: none;
+    color: white;
+    width: 15px;
+    height: 12px;
+    
+    margin-right: 3rem;
+}
+
+.Senai:hover{
+    color: blue;
+}

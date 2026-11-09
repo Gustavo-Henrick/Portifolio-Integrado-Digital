@@ -5,9 +5,10 @@
    
     return(
         <nav>
-         
+         <Link className="Senai" to="/senai">SENAI</Link>
          <Link className="Home" to="/">HOME</Link>
          <Link className="Sesi" to="/sesi">SESI</Link>
+         
 
          
         </nav>
