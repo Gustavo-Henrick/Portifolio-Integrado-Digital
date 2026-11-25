@@ -2,12 +2,10 @@ import { useState } from 'react'
 import './style.css'
 
 const areas = [
-  ['linguagens', 'Linguagens e suas Tecnologias'],
-  ['matematica', 'Matemática e suas Tecnologias'],
-  ['natureza', 'Ciências da Natureza e suas Tecnologias'],
-  ['humanas', 'Ciências Humanas e Sociais Aplicadas'],
-  ['map', 'MAP – Matemática'],
-  ['projeto-de-vida', 'Projeto de Vida'],
+  ['matematica', 'Matemática'],
+  ['natureza', 'Ciências da Natureza'],
+  ['humanas', 'Ciências Humanas'],
+  ['linguagens', 'Linguagens'],
 ]
 
 const periods = [1, 2, 3, 4]
@@ -83,77 +81,93 @@ function readStored(key) {
   }
 }
 
-function SesiEntry({ section, storageKey }) {
-  const [saved, setSaved] = useState(() => readStored(storageKey))
+function SesiEntry({ section, storageKey, signedIn }) {
+  const [saved] = useState(() => readStored(storageKey))
+  const [editing, setEditing] = useState(false)
   const [message, setMessage] = useState('')
-  const projects = section.repeatable ? (saved ?? []) : []
-
-  function handleSubmit(event) {
-    event.preventDefault()
-    const form = event.currentTarget
-    const entry = Object.fromEntries(
-      Array.from(new FormData(form), ([name, value]) => [name, value.trim()]),
-    )
-
-    if (section.repeatable && !entry.titulo) {
-      setMessage('Digite um título para o trabalho.')
-      form.elements.titulo.focus()
-      return
-    }
-
-    if (entry.evidencia && !/^https?:\/\//i.test(entry.evidencia)) {
-      setMessage('Use um link que comece com https:// ou http://.')
-      form.elements.evidencia.focus()
-      return
-    }
-
-    const next = section.repeatable ? [...projects, entry] : entry
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(next))
-      setSaved(next)
-      setMessage(section.repeatable ? 'Trabalho adicionado.' : 'Registro salvo.')
-      if (section.repeatable) form.reset()
-    } catch {
-      setMessage('O navegador não conseguiu salvar o registro. Tente novamente.')
-    }
-  }
+  const projects = section.repeatable && Array.isArray(saved) ? saved : []
+  const values = section.repeatable ? [] : section.fields.filter(([id]) => saved?.[id])
 
   return (
     <>
+      {signedIn && (
+        <div className="sesi-editor-actions">
+          <button
+            type="button"
+            className="sesi-edit-button"
+            aria-label={editing ? 'Cancelar edição' : 'Editar registro'}
+            title={editing ? 'Cancelar edição' : 'Editar registro'}
+            aria-expanded={editing}
+            onClick={() => {
+              setEditing(!editing)
+              setMessage('')
+            }}
+          >
+            {editing ? 'Cancelar edição' : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="m15 5 4 4M4 20l1-5L16 4a2.8 2.8 0 0 1 4 4L9 19l-5 1Z" />
+              </svg>
+            )}
+          </button>
+        </div>
+      )}
+
       {projects.length > 0 && (
         <ul className="sesi-activities">
           {projects.map((project, index) => (
             <li key={index}>
               <h3>{project.titulo}</h3>
               {project.descricao && <p>{project.descricao}</p>}
-              {project.evidencia && <a href={project.evidencia}>Abrir evidência de {project.titulo}</a>}
+              {/^https?:\/\//i.test(project.evidencia) && (
+                <a href={project.evidencia}>Abrir evidência de {project.titulo}</a>
+              )}
             </li>
           ))}
         </ul>
       )}
 
-      <form onSubmit={handleSubmit} onChange={() => setMessage('')} className="sesi-form">
-        {section.fields.map(([id, label, type]) => (
-          <label key={id}>
-            {label}
-            {type ? (
-              <input
-                name={id}
-                type={type}
-                defaultValue={section.repeatable ? '' : (saved?.[id] ?? '')}
-                required={id === 'titulo'}
-                maxLength={type === 'url' ? 2048 : 160}
-              />
-            ) : (
-              <textarea name={id} defaultValue={section.repeatable ? '' : (saved?.[id] ?? '')} rows={4} maxLength={5000} />
-            )}
-          </label>
-        ))}
-        <button type="submit" className="sesi-action">
-          {section.repeatable ? 'Adicionar trabalho' : section.id === 'autoavaliacao' ? 'Salvar autoavaliação' : 'Salvar registro'}
-        </button>
-        <p role="status" className="sesi-status">{message}</p>
-      </form>
+      {values.length > 0 && (
+        <dl className="sesi-record">
+          {values.map(([id, label]) => (
+            <div key={id}>
+              <dt>{label}</dt>
+              <dd>{saved[id]}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      {projects.length === 0 && values.length === 0 && <p>Nenhum registro nesta seção.</p>}
+
+      {signedIn && editing && (
+        <form
+          className="sesi-form"
+          onSubmit={(event) => {
+            event.preventDefault()
+            setMessage('O salvamento será habilitado com a API.')
+          }}
+          onChange={() => setMessage('')}
+        >
+          {section.fields.map(([id, label, type]) => (
+            <label key={id}>
+              {label}
+              {type ? (
+                <input
+                  name={id}
+                  type={type}
+                  defaultValue={section.repeatable ? '' : (saved?.[id] ?? '')}
+                  required={id === 'titulo'}
+                  maxLength={type === 'url' ? 2048 : 160}
+                />
+              ) : (
+                <textarea name={id} defaultValue={saved?.[id] ?? ''} rows={4} maxLength={5000} />
+              )}
+            </label>
+          ))}
+          <button type="submit" className="sesi-action">Salvar registro</button>
+          <p role="status" className="sesi-status">{message}</p>
+        </form>
+      )}
     </>
   )
 }
@@ -183,7 +197,7 @@ function PreviousRecords({ records }) {
   )
 }
 
-function Sesi() {
+function Sesi({ signedIn }) {
   const [area, setArea] = useState(areas[0][0])
   const [sectionId, setSectionId] = useState('fundamentos')
   const [period, setPeriod] = useState(1)
@@ -205,12 +219,14 @@ function Sesi() {
       </header>
 
       <div className="sesi-board">
-        <label className="sesi-area">
-          Área do conhecimento ou matéria
-          <select value={area} onChange={(event) => setArea(event.target.value)}>
-            {areas.map(([id, title]) => <option key={id} value={id}>{title}</option>)}
-          </select>
-        </label>
+        <div className="sesi-area" role="group" aria-label="Matérias">
+          {areas.map(([id, title]) => (
+            <button type="button" key={id} aria-pressed={area === id} onClick={() => setArea(id)}>
+              {title}
+            </button>
+          ))}
+        </div>
+
 
         <div className="sesi-layout">
           <aside className="sesi-sidebar" aria-label="Seções do portfólio">
@@ -248,8 +264,8 @@ function Sesi() {
                 <h2 id="sesi-section-title">{section.title}</h2>
                 <span>{section.quarterly ? `${period}º bimestre` : 'Anual'}</span>
               </div>
-              <p className="sesi-storage-note">Os registros ficam salvos neste navegador.</p>
-              <SesiEntry key={storageKey} section={section} storageKey={storageKey} />
+
+              <SesiEntry key={storageKey + signedIn} section={section} storageKey={storageKey} signedIn={signedIn} />
             </section>
           </div>
         </div>

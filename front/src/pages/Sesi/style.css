@@ -6,14 +6,6 @@
   background: #f8faff;
 }
 
-.sesi-area {
-  display: grid;
-  gap: 0.35rem;
-  width: min(100%, 28rem);
-  margin-bottom: 1.15rem;
-  font-weight: 700;
-}
-
 .sesi-layout {
   display: grid;
   grid-template-columns: minmax(11rem, 1fr) minmax(0, 2.65fr);
@@ -101,15 +93,9 @@
   font-weight: 700;
 }
 
-.sesi-storage-note {
-  margin: 0.45rem 0 0;
-  font-size: 0.9rem;
-}
-
 .sesi-form { display: grid; gap: 0.9rem; margin-top: 1rem; }
 .sesi-form label { display: grid; gap: 0.35rem; font-weight: 600; }
 
-.sesi-area select,
 .sesi-form :is(input, textarea) {
   width: 100%;
   min-width: 0;
@@ -159,4 +145,41 @@
 
 @media (max-width: 360px) {
   .sesi-sidebar { grid-template-columns: 1fr; }
+}
+.sesi-area {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-bottom: 1.15rem;
+}
+
+.sesi-area button,
+.sesi-edit-button {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #d7e4fa;
+  border-radius: 0.65rem;
+  background: #edf4ff;
+  color: #18315c;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sesi-area button:hover, .sesi-edit-button:hover { background: #dceaff; }
+
+.sesi-area button[aria-pressed="true"] {
+  border-color: var(--school-color);
+  background: var(--school-color);
+  color: white;
+}
+
+.sesi-editor-actions { display: flex; justify-content: flex-end; margin: 0.55rem 0; }
+.sesi-edit-button { display: inline-flex; align-items: center; justify-content: center; min-width: 2.75rem; }
+.sesi-record { display: grid; gap: 0.75rem; }
+.sesi-record dt { font-weight: 700; }
+.sesi-record dd { margin: 0.2rem 0 0; white-space: pre-wrap; }
+
+@media (max-width: 640px) {
+  .sesi-area { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
