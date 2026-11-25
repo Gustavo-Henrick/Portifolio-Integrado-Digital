@@ -1,36 +1,22 @@
-import "./Style.css"
+const subjects = ['Matemática', 'Linguagens', 'Ciências da Natureza', 'Ciências Humanas']
+
 function Senai() {
   return (
-    <div>
-      <h1 className="btn-title">Senai</h1>
-      
-
-        <div className="container">
-        <button className="btn">
-            <h1 className="btn-title">Matematica</h1>
-            <p className="btn-content">conteudo sobre matemática</p>
-       
-        </button>
-
-        <button className="btn">
-            <h1 className="btn-title">Linguagens</h1>
-            <p className="btn-content">conteudo sobre linguagens</p>
-        
-        </button>
-
-        <button className="btn">
-            <h1 className="btn-title">Ciências da Natureza</h1>
-            <p className="btn-content">conteudo sobre ciências da natureza</p>
-    
-        </button>
-
-        <button className="btn">
-            <h1 className="btn-title">Ciências Humanas</h1>
-            <p className="btn-content">conteudo sobre ciências humanas</p>
-           
-        </button>
-        </div>
-    </div>
-  );
+    <main className="school-page school-page--senai">
+      <header>
+        <h1>SENAI</h1>
+        <p>Portfólio de projetos e atividades do SENAI</p>
+      </header>
+      <ul className="school-subjects" aria-label="Áreas de estudo">
+        {subjects.map((subject) => (
+          <li key={subject}>
+            <h2>{subject}</h2>
+            <p>Atividades em breve.</p>
+          </li>
+        ))}
+      </ul>
+    </main>
+  )
 }
-export default Senai;
+
+export default Senai

@@ -1,0 +1,138 @@
+.home {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(1.25rem, 5vw, 3.75rem);
+  padding-bottom: clamp(4rem, 8vw, 6.5rem);
+  background: linear-gradient(135deg, #fffdfc, #f8faff);
+}
+
+.home::after {
+  position: absolute;
+  z-index: -1;
+  right: -15%;
+  bottom: -8rem;
+  left: -15%;
+  height: 11rem;
+  border-radius: 48% 54% 0 0;
+  background: #dbe9ff;
+  transform: rotate(-4deg);
+  content: '';
+}
+
+.home-intro {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: clamp(0.75rem, 3vw, 2.5rem);
+}
+
+.home-greeting {
+  margin: 0 0 0.65rem;
+  font-weight: 700;
+}
+
+.home h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 5.5vw, 4.5rem);
+  line-height: 0.99;
+  letter-spacing: -0.055em;
+}
+
+.home h1::after {
+  display: block;
+  width: 32%;
+  height: 0.35rem;
+  margin-top: 0.75rem;
+  border-radius: 65% 50% 35% 35%;
+  background: #53b9ff;
+  transform: rotate(-2deg);
+  content: '';
+}
+
+.home-description {
+  max-width: 27rem;
+  margin: 0.75rem 0 0;
+  color: #293e61;
+  line-height: 1.55;
+}
+
+.home-illustration {
+  display: block;
+  width: 100%;
+  max-height: 19rem;
+  object-fit: contain;
+}
+
+.school-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.75rem, 3vw, 1.75rem);
+  margin-top: 1.75rem;
+}
+
+.school-link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(0.65rem, 2vw, 1.25rem);
+  min-height: 7.5rem;
+  padding: clamp(0.9rem, 3vw, 1.75rem);
+  border-radius: 1.2rem;
+  color: white;
+  text-decoration: none;
+  box-shadow: 0 0.75rem 1.5rem var(--card-shadow);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.school-link--book {
+  --card-shadow: #0057eb30;
+  --card-ink: #0651d0;
+  background: radial-gradient(ellipse at 0 125%, #007ee8 0 31%, transparent 32%),
+    linear-gradient(145deg, #0667da, #1246c4 65%, #0759df);
+}
+
+.school-link--gear {
+  --card-shadow: #00796f30;
+  --card-ink: #00685f;
+  background: radial-gradient(ellipse at 94% 130%, #00978b 0 38%, transparent 39%),
+    linear-gradient(145deg, #008276, #00676c 65%, #00766d);
+}
+
+.school-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 1rem 1.6rem var(--card-shadow);
+}
+
+.school-icon {
+  width: clamp(1.65rem, 4vw, 3rem);
+}
+
+.school-link strong {
+  display: block;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.1;
+  margin-bottom: 0.35rem;
+}
+
+.school-open {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #f4faff;
+  color: var(--card-ink);
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .home-intro, .school-links { grid-template-columns: 1fr; }
+  .home-illustration { max-height: 13rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .school-link { transition: none; }
+  .school-link:hover { transform: none; }
+}
