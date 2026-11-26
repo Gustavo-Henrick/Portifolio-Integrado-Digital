@@ -1,0 +1,19 @@
+import "../model/index.js";
+import conn, { schema } from "./conn.js";
+
+export default async function iniciarBanco() {
+  await conn.authenticate();
+  await conn.getQueryInterface().createSchema(schema);
+  await conn.sync();
+
+  // sync cria as tabelas novas. As colunas abaixo também precisam existir nas instalações anteriores.
+  await conn.transaction(async (transaction) => {
+    for (const sql of [
+      `ALTER TABLE "${schema}"."materias" ADD COLUMN IF NOT EXISTS "conteudo_anual" JSONB NOT NULL DEFAULT '{}'::jsonb`,
+      `ALTER TABLE "${schema}"."bimestres" ADD COLUMN IF NOT EXISTS "participacao" JSONB`,
+      `ALTER TABLE "${schema}"."trabalhos" ADD COLUMN IF NOT EXISTS "evidencias" JSONB NOT NULL DEFAULT '[]'::jsonb`,
+    ]) {
+      await conn.query(sql, { transaction });
+    }
+  });
+}
