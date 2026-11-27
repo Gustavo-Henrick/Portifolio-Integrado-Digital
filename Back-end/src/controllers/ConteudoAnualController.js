@@ -3,6 +3,7 @@ import { Materia } from "../model/index.js";
 import { ano, erro, texto, textoLongo, uuid, validarCorpo } from "./validacao.js";
 
 const quemSouEu = {
+  nome: (valor) => texto(valor, 'nome', 120),
   serie: (valor) => texto(valor, "serie", 80),
   turma: (valor) => texto(valor, "turma", 80),
   itinerario_formativo: (valor) => texto(valor, "itinerario_formativo", 120),
@@ -10,17 +11,24 @@ const quemSouEu = {
 };
 
 const reflexaoCritica = {
+  desafios: (valor) => textoLongo(valor, 'desafios'),
   aprendizado_academico: (valor) => textoLongo(valor, "aprendizado_academico"),
   aplicacao_pratica: (valor) => textoLongo(valor, "aplicacao_pratica"),
   pontos_a_melhorar: (valor) => textoLongo(valor, "pontos_a_melhorar"),
 };
 
 const aprendizados = {
+  convivencia: (valor) => textoLongo(valor, 'convivencia'),
   experiencias: (valor) => textoLongo(valor, "experiencias"),
   aplicacao_dos_conhecimentos: (valor) => textoLongo(valor, "aplicacao_dos_conhecimentos"),
 };
 
 const secoes = {
+  autoavaliacao_anual: (valor) => validarCorpo(valor, true, {
+    evolucao: (item) => textoLongo(item, "evolucao"),
+    desafio: (item) => textoLongo(item, "desafio"),
+    meta: (item) => textoLongo(item, "meta"),
+  }),
   quem_sou_eu: (valor) => validarCorpo(valor, true, quemSouEu),
   reflexao_critica: (valor) => validarCorpo(valor, true, reflexaoCritica),
   conexoes_interdisciplinares: (valor) => textoLongo(valor, "conexoes_interdisciplinares"),

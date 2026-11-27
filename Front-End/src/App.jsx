@@ -15,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/sesi" element={<Sesi signedIn={signedIn} />} />
-        <Route path="/senai" element={<Senai />} />
+        <Route path="/senai" element={<Senai signedIn={signedIn} />} />
       </Routes>
     </>
   )

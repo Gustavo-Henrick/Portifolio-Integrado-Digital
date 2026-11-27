@@ -54,6 +54,7 @@ export function dadosBimestre(body, parcial) {
   }, {
     conteudo: (valor) => textoLongo(valor, "conteudo", true),
     participacao: (valor) => valor === null ? null : validarCorpo(valor, true, {
+      destaque: (item) => textoLongo(item, 'destaque'),
       registro_atividades: (item) => textoLongo(item, "registro_atividades"),
       reflexao_pratica: (item) => textoLongo(item, "reflexao_pratica"),
       autoavaliacao: (item) => textoLongo(item, "autoavaliacao"),

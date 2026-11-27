@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { getSesi, saveSesi } from '../../api/portfolio.js'
+import { usePortfolio } from '../../api/usePortfolio.js'
 import './style.css'
 
 const areas = [
@@ -81,16 +83,45 @@ function readStored(key) {
   }
 }
 
-function SesiEntry({ section, storageKey, signedIn }) {
-  const [saved] = useState(() => readStored(storageKey))
+function SesiEntry({ section, storageKey, signedIn, areaName, period }) {
+  const { loading, data, error, reload } = usePortfolio(getSesi, areaName, section.id, period)
+  const [localRecord] = useState(() => readStored(storageKey))
+  const [saving, setSaving] = useState(false)
+  const saved = data ?? localRecord
   const [editing, setEditing] = useState(false)
   const [message, setMessage] = useState('')
   const projects = section.repeatable && Array.isArray(saved) ? saved : []
   const values = section.repeatable ? [] : section.fields.filter(([id]) => saved?.[id])
 
+  async function submit(event) {
+    event.preventDefault()
+    if (saving) return
+    const values = Object.fromEntries(Array.from(new FormData(event.currentTarget), ([key, value]) => [key, value.trim()]))
+    setSaving(true)
+    setMessage('')
+    try {
+      await saveSesi(areaName, section.id, period, values)
+      setEditing(false)
+      setMessage('Registro salvo. Atualize a visualização para ver o registro.')
+    } catch (failure) {
+      setMessage(failure.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <>
-      {signedIn && (
+      {loading && <p role="status">Carregando registros…</p>}
+      {error && <p role="alert">{error}</p>}
+      {saved?.capitulos?.length > 0 && (
+        <ul className="sesi-activities">
+          {saved.capitulos.map((chapter) => (
+            <li key={chapter.id}><h3>{chapter.titulo}</h3><p>{chapter.conteudo}</p></li>
+          ))}
+        </ul>
+      )}
+      {signedIn && !loading && !error && (
         <div className="sesi-editor-actions">
           <button
             type="button"
@@ -98,6 +129,7 @@ function SesiEntry({ section, storageKey, signedIn }) {
             aria-label={editing ? 'Cancelar edição' : 'Editar registro'}
             title={editing ? 'Cancelar edição' : 'Editar registro'}
             aria-expanded={editing}
+            disabled={saving}
             onClick={() => {
               setEditing(!editing)
               setMessage('')
@@ -118,9 +150,9 @@ function SesiEntry({ section, storageKey, signedIn }) {
             <li key={index}>
               <h3>{project.titulo}</h3>
               {project.descricao && <p>{project.descricao}</p>}
-              {/^https?:\/\//i.test(project.evidencia) && (
-                <a href={project.evidencia}>Abrir evidência de {project.titulo}</a>
-              )}
+              {(project.evidencias ?? [project.evidencia]).filter((url) => /^https?:\/\//i.test(url)).map((url, index) => (
+                <a key={index} href={url}>Abrir evidência {index + 1} de {project.titulo}</a>
+              ))}
             </li>
           ))}
         </ul>
@@ -137,15 +169,12 @@ function SesiEntry({ section, storageKey, signedIn }) {
         </dl>
       )}
 
-      {projects.length === 0 && values.length === 0 && <p>Nenhum registro nesta seção.</p>}
+      {!loading && !error && projects.length === 0 && values.length === 0 && !saved?.capitulos?.length && <p>Nenhum registro nesta seção.</p>}
 
       {signedIn && editing && (
         <form
           className="sesi-form"
-          onSubmit={(event) => {
-            event.preventDefault()
-            setMessage('O salvamento será habilitado com a API.')
-          }}
+          onSubmit={submit}
           onChange={() => setMessage('')}
         >
           {section.fields.map(([id, label, type]) => (
@@ -157,17 +186,19 @@ function SesiEntry({ section, storageKey, signedIn }) {
                   type={type}
                   defaultValue={section.repeatable ? '' : (saved?.[id] ?? '')}
                   required={id === 'titulo'}
-                  maxLength={type === 'url' ? 2048 : 160}
+                  maxLength={type === 'url' ? 2048 : ['serie', 'turma'].includes(id) ? 80 : 120}
                 />
               ) : (
                 <textarea name={id} defaultValue={saved?.[id] ?? ''} rows={4} maxLength={5000} />
               )}
             </label>
           ))}
-          <button type="submit" className="sesi-action">Salvar registro</button>
-          <p role="status" className="sesi-status">{message}</p>
+          <button type="submit" className="sesi-action" disabled={saving}>{saving ? 'Salvando…' : 'Salvar registro'}</button>
+
         </form>
       )}
+      {message && <p role="status">{message}</p>}
+      <button type="button" className="sesi-edit-button" onClick={reload} disabled={loading || saving || editing}>Atualizar visualização</button>
     </>
   )
 }
@@ -265,7 +296,7 @@ function Sesi({ signedIn }) {
                 <span>{section.quarterly ? `${period}º bimestre` : 'Anual'}</span>
               </div>
 
-              <SesiEntry key={storageKey + signedIn} section={section} storageKey={storageKey} signedIn={signedIn} />
+              <SesiEntry key={storageKey + signedIn} section={section} storageKey={storageKey} signedIn={signedIn} areaName={areas.find(([id]) => id === area)[1]} period={section.quarterly ? period : 1} />
             </section>
           </div>
         </div>

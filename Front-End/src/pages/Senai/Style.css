@@ -76,57 +76,9 @@
 .senai-project h2 { margin: 0; font-size: clamp(1.25rem, 3vw, 1.75rem); }
 .senai-project h3 { margin: 0; font-size: 1rem; }
 
-.senai-status {
-  padding: 0.3rem 0.65rem;
-  border-radius: 1rem;
-  background: #d5f3e9;
-  color: #005b46;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.senai-project-content {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(7.5rem, 0.55fr);
-  align-items: center;
-  gap: 1.1rem;
-  margin-top: 1rem;
-}
-
-.senai-project-content p { margin: 0.45rem 0 0.95rem; line-height: 1.5; }
 .senai-empty { margin-bottom: 0; line-height: 1.5; }
 .senai-project-link { display: inline-flex; align-items: center; text-decoration: none; }
 .senai-project-link:hover { background: #005f58; }
-
-.senai-art {
-  display: grid;
-  place-items: center;
-  min-height: 7rem;
-  padding: 1rem;
-  border-radius: 0.85rem;
-  background: radial-gradient(circle at 25% 20%, #d1f9f5, transparent 56%),
-    linear-gradient(155deg, #8ed8fb 65%, #f4c68b 66%);
-}
-
-.senai-laptop { width: min(100%, 9rem); transform: rotate(-5deg); }
-.senai-laptop-screen {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 1.55;
-  border: 0.34rem solid #102949;
-  border-radius: 0.55rem 0.55rem 0.25rem 0.25rem;
-  background: linear-gradient(145deg, #247ca6, #143f70);
-  color: #a7ebff;
-  font: 700 clamp(1.4rem, 4vw, 2.55rem) monospace;
-}
-
-.senai-laptop-base {
-  height: 0.42rem;
-  margin: 0 -0.5rem;
-  border-radius: 0.15rem 0.15rem 0.55rem 0.55rem;
-  background: #dce9ef;
-  box-shadow: 0 0.2rem 0 #517584;
-}
 
 @media (max-width: 680px) {
   .senai-board { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'semesters' 'categories' 'project'; }
@@ -134,8 +86,9 @@
 }
 
 @media (max-width: 460px) {
-  .senai-project-content { grid-template-columns: minmax(0, 1fr); }
-  .senai-art { max-width: 13rem; }
   .senai-categories button { gap: 0.28rem; padding-inline: 0.4rem; }
   .senai-category-icon { flex-basis: 1.1rem; }
 }
+.senai-api-project { margin: 1rem 0; padding: 0.85rem; border-radius: 0.65rem; background: var(--school-tint); overflow-wrap: anywhere; }
+.senai-api-project p { white-space: pre-wrap; }
+.senai-project > button { margin: 0.65rem 0.4rem 0 0; }
