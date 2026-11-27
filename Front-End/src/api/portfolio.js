@@ -141,13 +141,20 @@ export async function getSenai(nome, number, signal) {
   const record = await periods('SENAI', subject.id, number).find(signal)
   if (!record) return { projetos: [], conteudo: null }
   const projetos = await request(`/projetos?semestre_id=${record.id}`, { signal })
-  return { projetos, conteudo: record.conteudo_aprendido }
+  return { projetos, conteudo: record.conteudo_aprendido, registros: record.registros_portfolio }
 }
 
-export async function saveSenaiContent(nome, number, value) {
+export function saveSenaiContent(nome, number, value) {
+  return saveSenaiSemester(nome, number, { conteudo_aprendido: value || null })
+}
+
+export function saveSenaiSections(nome, number, registros) {
+  return saveSenaiSemester(nome, number, { registros_portfolio: registros })
+}
+
+async function saveSenaiSemester(nome, number, data) {
   const subject = await ensureSubject('SENAI', nome)
   const period = periods('SENAI', subject.id, number)
-  const data = { conteudo_aprendido: value || null }
   const { record, created } = await ensurePeriod(period, data)
   return created ? record : request(`/semestres/${record.id}`, { method: 'PUT', data })
 }

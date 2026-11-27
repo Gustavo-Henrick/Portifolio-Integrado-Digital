@@ -149,3 +149,18 @@ export function imagensTrabalho(valor) {
   }
   return imagens;
 }
+
+export function registrosSemestre(valor) {
+  const textoOpcional = (campo) => (item) => textoLongo(item, campo, true);
+
+  return validarCorpo(valor, true, {
+    codigos: textoOpcional("codigos"),
+    relatorios: textoOpcional("relatorios"),
+    competencias: textoOpcional("competencias"),
+    autoavaliacao: textoOpcional("autoavaliacao"),
+    links_codigo: linksDeEvidencias,
+    videos: linksDeEvidencias,
+    links_relatorios: linksDeEvidencias,
+    fotos: imagensTrabalho,
+  });
+}

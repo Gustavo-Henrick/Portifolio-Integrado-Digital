@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { deleteSenaiProject, getSenai, getSenaiProject, saveSenai, saveSenaiContent, appendSenaiAttachments } from '../../api/portfolio.js'
 import { usePortfolio } from '../../api/usePortfolio.js'
 import { imageTypes, readAttachments } from '../../api/attachments.js'
+import SubjectPortfolio from './SubjectPortfolio.jsx'
 import './Style.css'
 
 const subjectsBySemester = {
@@ -175,6 +176,7 @@ function SenaiProjects({ subject, semester, signedIn }) {
   const [selectedProject, setSelectedProject] = useState(null)
   const [adding, setAdding] = useState(false)
   const [editingContent, setEditingContent] = useState(false)
+  const [editingResources, setEditingResources] = useState(false)
   const projects = data?.projetos
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
@@ -256,7 +258,7 @@ function SenaiProjects({ subject, semester, signedIn }) {
         </form>
       </dialog>
 
-      <button type="button" className="sesi-edit-button" onClick={reload} disabled={loading || saving || adding || editingContent}>Atualizar visualização</button>
+      <button type="button" className="sesi-edit-button" onClick={reload} disabled={loading || saving || adding || editingContent || editingResources}>Atualizar visualização</button>
       {signedIn && !loading && !error && (
         <button type="button" className="sesi-edit-button" aria-label={adding ? 'Cancelar' : 'Adicionar projeto'} disabled={saving}
           onClick={() => { setAdding(!adding); setMessage('') }}>
@@ -273,6 +275,16 @@ function SenaiProjects({ subject, semester, signedIn }) {
           <button type="submit" className="senai-project-link" disabled={saving}>{saving ? 'Salvando…' : 'Salvar projeto'}</button>
         </form>
       )}
+      <SubjectPortfolio
+        data={data?.registros}
+        subject={subject}
+        semester={semester}
+        signedIn={signedIn}
+        ready={!loading && !error}
+        onEditingChange={setEditingResources}
+        onSaved={setMessage}
+      />
+
       {message && <p role="status">{message}</p>}
     </>
   )

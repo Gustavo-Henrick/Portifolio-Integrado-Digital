@@ -16,6 +16,7 @@ export default async function iniciarBanco() {
       `ALTER TABLE "${schema}"."semestres" ADD COLUMN IF NOT EXISTS "conteudo_aprendido" TEXT`,
       `ALTER TABLE "${schema}"."trabalhos" ADD COLUMN IF NOT EXISTS "imagens" JSONB NOT NULL DEFAULT '[]'::jsonb`,
       `ALTER TABLE "${schema}"."usuarios" ADD COLUMN IF NOT EXISTS "pode_editar" BOOLEAN NOT NULL DEFAULT false`,
+      `ALTER TABLE "${schema}"."semestres" ADD COLUMN IF NOT EXISTS "registros_portfolio" JSONB NOT NULL DEFAULT '{}'::jsonb`,
     ]) {
       await conn.query(sql, { transaction });
     }

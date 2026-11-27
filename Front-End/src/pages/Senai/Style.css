@@ -174,3 +174,28 @@
 }
 
 .senai-learned-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.senai-resources { margin-top: 1.25rem; }
+.senai-resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 0.65rem;
+  margin-top: 0.65rem;
+}
+
+.senai-resource {
+  min-width: 0;
+  padding: 0.8rem;
+  border: 1px solid #dbe9e6;
+  border-radius: 0.65rem;
+  background: #f5fbf9;
+  overflow-wrap: anywhere;
+}
+
+.senai-resource h4 { margin: 0; }
+.senai-resource p { margin-bottom: 0; }
+.senai-resource pre { overflow-x: auto; padding: 0.55rem; background: #e7f5f0; }
+.senai-resource-links { padding-left: 1.25rem; }
+.senai-resources fieldset { min-width: 0; display: grid; gap: 0.85rem; border: 1px solid #dbe9e6; border-radius: 0.65rem; }
+.senai-resources .senai-keep-photo { display: flex; align-items: center; }
+.senai-resources .senai-keep-photo input { width: auto; }

@@ -15,7 +15,7 @@ app.use((_req, res, next) => {
 });
 app.use("/usuarios", express.json({ limit: "8kb" }), UsuarioRouter);
 app.use(protectWrites);
-app.use(["/projetos", "/semestres/projetos", "/semestre/projeto", "/trabalhos", "/bimestre/trabalho"], express.json({ limit: "6mb" }));
+app.use(["/projetos", "/semestres/projetos", "/semestre/projeto", "/trabalhos", "/bimestre/trabalho", "/semestres"], express.json({ limit: "6mb" }));
 app.use(express.json({ limit: "512kb" }));
 
 app.use("/materias", MateriaRouter);
