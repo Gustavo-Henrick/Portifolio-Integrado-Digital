@@ -7,6 +7,7 @@ import MateriaRouter from "./routes/MateriaRouter.js";
 import PortfolioRouter from "./routes/PortfolioRouter.js";
 
 const app = express();
+app.use(["/projetos", "/semestres/projetos", "/semestre/projeto"], express.json({ limit: "6mb" }));
 app.use(express.json({ limit: "512kb" }));
 app.use("/usuarios", UsuarioRouter);
 app.use("/materias", MateriaRouter);

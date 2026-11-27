@@ -10,6 +10,7 @@ async function request(path, { method = 'GET', data, signal } = {}) {
     if (error.name === 'AbortError') throw error
     throw new Error('Não foi possível conectar à API do portfólio.')
   })
+  if (response.status === 204) return null
   const body = await response.json().catch(() => null)
   if (!response.ok || body === null) {
     const detail = body?.details?.[0]
@@ -127,10 +128,22 @@ export async function saveSesi(nome, section, number, values) {
 
 export async function getSenai(nome, number, signal) {
   const subject = await findSubject('SENAI', nome, signal)
-  if (!subject) return []
+  if (!subject) return { projetos: [], conteudo: null }
   const record = await periods('SENAI', subject.id, number).find(signal)
-  return record ? request(`/projetos?semestre_id=${record.id}`, { signal }) : []
+  if (!record) return { projetos: [], conteudo: null }
+  const projetos = await request(`/projetos?semestre_id=${record.id}`, { signal })
+  return { projetos, conteudo: record.conteudo_aprendido }
 }
+
+export async function saveSenaiContent(nome, number, value) {
+  const subject = await ensureSubject('SENAI', nome)
+  const period = periods('SENAI', subject.id, number)
+  const data = { conteudo_aprendido: value || null }
+  const { record, created } = await ensurePeriod(period, data)
+  return created ? record : request(`/semestres/${record.id}`, { method: 'PUT', data })
+}
+
+
 
 export async function saveSenai(nome, number, values) {
   if (!values.titulo) throw new Error('Preencha o título do projeto.')
@@ -142,5 +155,19 @@ export async function saveSenai(nome, number, values) {
     ...(values.descricao && { descricao: values.descricao }),
     ...(values.conteudo && { conteudo: values.conteudo }),
     ...(values.link_github && { link_github: values.link_github }),
+    ...(values.anexos?.length && { anexos: values.anexos }),
   } })
 }
+
+export function getSenaiProject(id, signal) {
+  return request(`/projetos/${encodeURIComponent(id)}`, { signal })
+}
+
+export function appendSenaiAttachments(id, anexos) {
+  return request(`/projetos/${encodeURIComponent(id)}/anexos`, { method: 'POST', data: { anexos } })
+}
+
+export function deleteSenaiProject(id) {
+  return request(`/projetos/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}
+

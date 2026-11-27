@@ -1,6 +1,6 @@
 import { erro, uuid, validarCorpo } from "./validacao.js";
 
-export function controllerPortfolio({ model, nome, pai, chave, campos, opcionais, filtros, order, dependencias = [] }) {
+export function controllerPortfolio({ model, nome, pai, chave, campos, opcionais, filtros, order, atributosLista, dependencias = [] }) {
   async function buscar(id) {
     const registro = await model.findByPk(uuid(id, "id"));
     if (!registro) throw erro(404, nome + " não encontrado.");
@@ -31,7 +31,7 @@ export function controllerPortfolio({ model, nome, pai, chave, campos, opcionais
       for (const [campo, validarFiltro] of Object.entries(filtros || {})) {
         if (req.query[campo] !== undefined) where[campo] = validarFiltro(req.query[campo]);
       }
-      res.json(await model.findAll({ where, order }));
+      res.json(await model.findAll({ where, order, attributes: atributosLista }));
     },
 
     async consultar(req, res) {

@@ -13,6 +13,7 @@ const Semestre = conn.define("Semestre", {
     allowNull: false,
     validate: { isInt: true, min: 2020, max: 2026 },
   },
+  conteudo_aprendido: { type: DataTypes.TEXT, allowNull: true },
   materia_id: { type: DataTypes.UUID, allowNull: false },
 }, {
   tableName: "semestres",

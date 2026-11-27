@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Bimestre, Capitulo, Materia, Projeto, Semestre, Trabalho } from "../model/index.js";
 import { controllerPortfolio } from "../controllers/PortfolioController.js";
-import { ano, erro, inteiro, linkGithub, linksDeEvidencias, texto, textoLongo, uuid } from "../controllers/validacao.js";
+import { anexosProjeto, ano, erro, inteiro, linkGithub, linksDeEvidencias, texto, textoLongo, uuid } from "../controllers/validacao.js";
 
 const numeroCapitulo = (valor) => inteiro(valor, "capitulo_numero", 1, 2_147_483_647);
 const numeroNaUrl = (valor) => typeof valor === "string" && /^\d+$/.test(valor) ? Number(valor) : NaN;
@@ -37,18 +37,21 @@ const semestres = controllerPortfolio({
     numero_semestre: (valor) => inteiro(valor, "numero_semestre", 1, 2),
     ano,
   },
+  opcionais: { conteudo_aprendido: (valor) => textoLongo(valor, "conteudo_aprendido", true) },
   filtros: { ano: (valor) => ano(numeroNaUrl(valor)) },
   order: [["ano", "ASC"], ["numero_semestre", "ASC"], ["id", "ASC"]],
   dependencias: [[Projeto, "semestre_id"]],
 });
 
 const projetos = controllerPortfolio({
+  atributosLista: { exclude: ["anexos"] },
   model: Projeto, nome: "Projeto", pai: Semestre, chave: "semestre_id",
   campos: { titulo: camposRegistro.titulo },
   opcionais: {
     conteudo: (valor) => textoLongo(valor, "conteudo", true),
     descricao: (valor) => textoLongo(valor, "descricao", true),
     link_github: linkGithub,
+    anexos: anexosProjeto,
   },
   order: [["created_at", "ASC"], ["id", "ASC"]],
 });
@@ -58,6 +61,20 @@ router.use("/capitulos", rotasCRUD(capitulos));
 router.use("/trabalhos", rotasCRUD(trabalhos));
 router.use("/semestres/projetos", rotasCRUD(projetos));
 router.use("/semestres", rotasCRUD(semestres));
+router.post("/projetos/:id/anexos", async (req, res) => {
+  const id = uuid(req.params.id, "id");
+  const novos = anexosProjeto(req.body?.anexos);
+  if (!novos.length) throw erro(400, "Selecione pelo menos um arquivo.");
+
+  const projeto = await Projeto.sequelize.transaction(async (transaction) => {
+    const registro = await Projeto.findByPk(id, { transaction, lock: transaction.LOCK.UPDATE });
+    if (!registro) throw erro(404, "Projeto não encontrado.");
+    const anexos = anexosProjeto([...registro.anexos, ...novos]);
+    return registro.update({ anexos }, { transaction });
+  });
+  res.json(projeto);
+});
+
 router.use("/projetos", rotasCRUD(projetos));
 
 router.post("/bimestre/capitulo", capitulos.criar);

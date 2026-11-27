@@ -33,5 +33,6 @@ export const Projeto = definirRegistro("Projeto", "projetos", {
   semestre_id: { type: DataTypes.UUID, allowNull: false },
   conteudo: { type: DataTypes.TEXT, allowNull: true },
   descricao: { type: DataTypes.TEXT, allowNull: true },
+  anexos: { type: DataTypes.JSONB, allowNull: false, defaultValue: [] },
   link_github: { type: DataTypes.STRING(512), allowNull: true },
 });

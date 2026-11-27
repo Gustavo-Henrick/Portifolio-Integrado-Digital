@@ -89,6 +89,88 @@
   .senai-categories button { gap: 0.28rem; padding-inline: 0.4rem; }
   .senai-category-icon { flex-basis: 1.1rem; }
 }
-.senai-api-project { margin: 1rem 0; padding: 0.85rem; border-radius: 0.65rem; background: var(--school-tint); overflow-wrap: anywhere; }
-.senai-api-project p { white-space: pre-wrap; }
 .senai-project > button { margin: 0.65rem 0.4rem 0 0; }
+
+.senai-project .senai-projects-title {
+  margin: 1.2rem 0 0.65rem;
+}
+
+.senai-project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 8rem), 1fr));
+  gap: 0.65rem;
+  margin: 0.8rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.senai-project-grid li { min-width: 0; }
+
+.senai-project-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.55rem;
+  width: 100%;
+  height: 100%;
+  min-height: 7.5rem;
+  padding: 0.75rem;
+  border: 1px solid #b8ddd4;
+  border-radius: 0.65rem;
+  background: var(--school-tint);
+  color: #005b46;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.senai-project-card:hover { background: #cceee4; }
+.senai-card-icon { font-family: monospace; font-size: 1.25rem; }
+
+.senai-project-details {
+  width: min(32rem, calc(100% - 2rem));
+  max-height: 85dvh;
+  padding: 1.25rem;
+  border: 1px solid #b8ddd4;
+  border-radius: 0.9rem;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+.senai-project-details::backdrop { background: #10204780; }
+.senai-project-details h4 { margin: 0; font-size: 1.25rem; }
+.senai-project-details p { line-height: 1.55; white-space: pre-wrap; }
+.senai-project-details form { display: flex; justify-content: flex-end; margin-top: 0.9rem; }
+
+
+.senai-attachments { margin-top: 1rem; border-top: 1px solid #dbe9e6; padding-top: 0.9rem; }
+.senai-attachments h5 { margin: 0; font-size: 1rem; }
+.senai-attachments ul { display: grid; gap: 0.6rem; padding: 0; list-style: none; }
+.senai-attachments img { display: block; max-width: 100%; max-height: 14rem; object-fit: contain; margin-bottom: 0.35rem; }
+.senai-project-details .senai-attachment-form { display: grid; justify-content: stretch; }
+.senai-delete-button {
+  margin-top: 0.75rem;
+  margin-right: 0.45rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #b93c3c;
+  border-radius: 0.65rem;
+  background: #fff1f1;
+  color: #8a2020;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+
+.senai-learned-content {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #dbe9e6;
+  border-radius: 0.65rem;
+  background: #f5fbf9;
+}
+
+.senai-learned-text { white-space: pre-wrap; overflow-wrap: anywhere; }

@@ -115,3 +115,29 @@ export function linksDeEvidencias(valor) {
     return url.href;
   });
 }
+
+export function anexosProjeto(valor) {
+  if (!Array.isArray(valor) || valor.length > 10) {
+    invalido("anexos", "Envie até 10 arquivos por projeto.");
+  }
+
+  let total = 0;
+  return valor.map((anexo) => {
+    const dados = validarCorpo(anexo, false, {
+      nome: (item) => texto(item, "nome", 240),
+      tipo: (item) => texto(item, "tipo", 120),
+      dados: (item) => {
+        if (typeof item !== "string" || item.length > 5_592_408 || !/^[A-Za-z0-9+/]+={0,2}$/.test(item)) {
+          invalido("anexos", "Arquivo inválido.");
+        }
+        const buffer = Buffer.from(item, "base64");
+        if (buffer.toString("base64") !== item) invalido("anexos", "Arquivo inválido.");
+        total += buffer.length;
+        if (total > 4 * 1024 * 1024) invalido("anexos", "Os arquivos podem somar até 4 MB por projeto.");
+        return item;
+      },
+    });
+    return dados;
+  });
+}
+
