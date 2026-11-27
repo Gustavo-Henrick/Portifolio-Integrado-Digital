@@ -183,3 +183,15 @@
 @media (max-width: 640px) {
   .sesi-area { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+.sesi-evidence-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  gap: 0.55rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sesi-evidence-gallery li { padding: 0; overflow: hidden; }
+.sesi-evidence-gallery img { display: block; width: 100%; max-height: 15rem; object-fit: contain; }

@@ -141,3 +141,11 @@ export function anexosProjeto(valor) {
   });
 }
 
+export function imagensTrabalho(valor) {
+  const imagens = anexosProjeto(valor);
+  const formatos = ["image/png", "image/jpeg", "image/gif", "image/webp", "image/avif"];
+  if (imagens.some(({ tipo }) => !formatos.includes(tipo))) {
+    invalido("imagens", "Use imagens PNG, JPEG, GIF, WebP ou AVIF.");
+  }
+  return imagens;
+}

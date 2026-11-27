@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { getSesi, saveSesi } from '../../api/portfolio.js'
 import { usePortfolio } from '../../api/usePortfolio.js'
+import { imageTypes, readAttachments } from '../../api/attachments.js'
 import './style.css'
 
 const areas = [
@@ -96,10 +97,19 @@ function SesiEntry({ section, storageKey, signedIn, areaName, period }) {
   async function submit(event) {
     event.preventDefault()
     if (saving) return
-    const values = Object.fromEntries(Array.from(new FormData(event.currentTarget), ([key, value]) => [key, value.trim()]))
+    const form = new FormData(event.currentTarget)
+    const values = Object.fromEntries(Array.from(form).filter(([, value]) => typeof value === 'string')
+      .map(([key, value]) => [key, value.trim()]))
     setSaving(true)
     setMessage('')
     try {
+      if (section.repeatable) {
+        const files = form.getAll('imagens').filter((file) => file.name)
+        if (files.some((file) => !imageTypes.includes(file.type))) {
+          throw new Error('Use imagens PNG, JPEG, GIF, WebP ou AVIF.')
+        }
+        values.imagens = await readAttachments(files)
+      }
       await saveSesi(areaName, section.id, period, values)
       setEditing(false)
       setMessage('Registro salvo. Atualize a visualização para ver o registro.')
@@ -150,6 +160,15 @@ function SesiEntry({ section, storageKey, signedIn, areaName, period }) {
             <li key={index}>
               <h3>{project.titulo}</h3>
               {project.descricao && <p>{project.descricao}</p>}
+              {project.imagens?.length > 0 && (
+                <ul className="sesi-evidence-gallery" aria-label="Imagens de evidência">
+                  {project.imagens.filter((image) => imageTypes.includes(image.tipo)).map((image, index) => (
+                    <li key={index}>
+                      <img src={`data:${image.tipo};base64,${image.dados}`} alt={image.nome} loading="lazy" />
+                    </li>
+                  ))}
+                </ul>
+              )}
               {(project.evidencias ?? [project.evidencia]).filter((url) => /^https?:\/\//i.test(url)).map((url, index) => (
                 <a key={index} href={url}>Abrir evidência {index + 1} de {project.titulo}</a>
               ))}
@@ -193,6 +212,12 @@ function SesiEntry({ section, storageKey, signedIn, areaName, period }) {
               )}
             </label>
           ))}
+
+          {section.repeatable && (
+            <label>Imagens de evidência (até 10, somando 4 MB)
+              <input type="file" name="imagens" accept={imageTypes.join(',')} multiple disabled={saving} />
+            </label>
+          )}
           <button type="submit" className="sesi-action" disabled={saving}>{saving ? 'Salvando…' : 'Salvar registro'}</button>
 
         </form>

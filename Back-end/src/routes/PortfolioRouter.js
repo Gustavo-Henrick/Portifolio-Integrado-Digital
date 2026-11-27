@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Bimestre, Capitulo, Materia, Projeto, Semestre, Trabalho } from "../model/index.js";
 import { controllerPortfolio } from "../controllers/PortfolioController.js";
-import { anexosProjeto, ano, erro, inteiro, linkGithub, linksDeEvidencias, texto, textoLongo, uuid } from "../controllers/validacao.js";
+import { anexosProjeto, ano, erro, imagensTrabalho, inteiro, linkGithub, linksDeEvidencias, texto, textoLongo, uuid } from "../controllers/validacao.js";
 
 const numeroCapitulo = (valor) => inteiro(valor, "capitulo_numero", 1, 2_147_483_647);
 const numeroNaUrl = (valor) => typeof valor === "string" && /^\d+$/.test(valor) ? Number(valor) : NaN;
@@ -27,7 +27,7 @@ const capitulos = controllerPortfolio({
 const trabalhos = controllerPortfolio({
   model: Trabalho, nome: "Trabalho", pai: Bimestre, chave: "bimestre_id",
   campos: camposRegistro,
-  opcionais: { evidencias: linksDeEvidencias },
+  opcionais: { evidencias: linksDeEvidencias, imagens: imagensTrabalho },
   order: [["created_at", "ASC"], ["id", "ASC"]],
 });
 

@@ -96,7 +96,7 @@ export async function getSesi(nome, section, number, signal) {
   if (section === 'fundamentos') {
     return { resumo: record.conteudo, capitulos: entries }
   }
-  return entries.map((entry) => ({ id: entry.id, titulo: entry.titulo, descricao: entry.conteudo, evidencias: entry.evidencias }))
+  return entries.map((entry) => ({ id: entry.id, titulo: entry.titulo, descricao: entry.conteudo, evidencias: entry.evidencias, imagens: entry.imagens }))
 }
 
 export async function saveSesi(nome, section, number, values) {
@@ -122,6 +122,7 @@ export async function saveSesi(nome, section, number, values) {
   if (section === 'projetos') return request('/trabalhos', { method: 'POST', data: {
     bimestre_id: record.id, titulo: values.titulo, conteudo: values.descricao,
     evidencias: values.evidencia ? [values.evidencia] : [],
+    imagens: values.imagens ?? [],
   } })
   return created ? record : request(`${period.path}/${record.id}`, { method: 'PUT', data: update })
 }

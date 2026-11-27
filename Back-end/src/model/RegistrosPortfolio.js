@@ -25,6 +25,7 @@ export const Capitulo = definirRegistro("Capitulo", "capitulos", {
 }]);
 
 export const Trabalho = definirRegistro("Trabalho", "trabalhos", {
+  imagens: { type: DataTypes.JSONB, allowNull: false, defaultValue: [] },
   evidencias: { type: DataTypes.JSONB, allowNull: false, defaultValue: [] },
   bimestre_id: { type: DataTypes.UUID, allowNull: false },
 });
