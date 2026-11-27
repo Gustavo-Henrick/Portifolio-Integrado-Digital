@@ -1,34 +1,48 @@
 import { useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import { login, logout } from '../../api/session.js'
 import './Style.css'
 
-const demoAccount = {
-  username: 'gustavo',
-  email: 'guga2008g@gmail.com',
-  password: 'Guga@2026Demo',
-}
-
-function Menu({ signedIn, onSignIn, onSignOut }) {
+function Menu({ signedIn, checking, onSignIn, onSignOut }) {
   const dialog = useRef(null)
   const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
 
-  function signIn(event) {
+  async function signIn(event) {
     event.preventDefault()
+    if (busy) return
     const form = event.currentTarget
     const values = new FormData(form)
-
-    if (
-      values.get('username').trim().toLowerCase() !== demoAccount.username ||
-      values.get('email').trim().toLowerCase() !== demoAccount.email ||
-      values.get('password') !== demoAccount.password
-    ) {
-      setError('Confira o usuário, o e-mail e a senha.')
-      return
+    setBusy(true)
+    setError('')
+    try {
+      const user = await login({
+        nome: values.get('username'),
+        email: values.get('email'),
+        senha: values.get('password'),
+      })
+      form.reset()
+      dialog.current.close()
+      onSignIn(user)
+    } catch (failure) {
+      setError(failure.message)
+    } finally {
+      setBusy(false)
     }
+  }
 
-    form.reset()
-    dialog.current.close()
-    onSignIn()
+  async function signOut() {
+    if (busy) return
+    setBusy(true)
+    setError('')
+    try {
+      await logout()
+      onSignOut()
+    } catch (failure) {
+      setError(failure.message)
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -44,15 +58,17 @@ function Menu({ signedIn, onSignIn, onSignOut }) {
       </nav>
 
       {signedIn ? (
-        <button className="site-login" type="button" onClick={onSignOut}>Sair</button>
+        <button className="site-login" type="button" disabled={busy} onClick={signOut}>Sair</button>
       ) : (
-        <button className="site-login" type="button" onClick={() => dialog.current.showModal()}>Entrar</button>
+        <button className="site-login" type="button" disabled={checking} onClick={() => dialog.current.showModal()}>Entrar</button>
       )}
 
+      {signedIn && error && <p role="alert">{error}</p>}
       <dialog
         ref={dialog}
         className="login-dialog"
         aria-labelledby="login-title"
+        onCancel={(event) => { if (busy) event.preventDefault() }}
         onClose={(event) => {
           event.currentTarget.querySelector('form').reset()
           setError('')
@@ -60,13 +76,13 @@ function Menu({ signedIn, onSignIn, onSignOut }) {
       >
         <h2 id="login-title">Entrar no portfólio</h2>
         <form onSubmit={signIn} onChange={() => setError('')}>
-          <label>Usuário<input name="username" autoComplete="username" required /></label>
-          <label>E-mail<input name="email" type="email" autoComplete="email" required /></label>
-          <label>Senha<input name="password" type="password" autoComplete="current-password" required /></label>
+          <label>Usuário<input name="username" autoComplete="username" maxLength={120} required /></label>
+          <label>E-mail<input name="email" type="email" autoComplete="email" maxLength={254} required /></label>
+          <label>Senha<input name="password" type="password" autoComplete="current-password" maxLength={256} required /></label>
           {error && <p role="alert">{error}</p>}
           <div className="login-actions">
-            <button type="button" onClick={() => dialog.current.close()}>Cancelar</button>
-            <button className="site-login" type="submit">Entrar</button>
+            <button type="button" disabled={busy} onClick={() => dialog.current.close()}>Cancelar</button>
+            <button className="site-login" type="submit" disabled={busy}>{busy ? 'Entrando…' : 'Entrar'}</button>
           </div>
         </form>
       </dialog>

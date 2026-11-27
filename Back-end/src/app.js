@@ -1,3 +1,4 @@
+import { protectWrites } from "./auth/session.js";
 import UsuarioRouter from "./routes/UsuarioRouter.js";
 import express from "express";
 import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from "sequelize";
@@ -7,9 +8,16 @@ import MateriaRouter from "./routes/MateriaRouter.js";
 import PortfolioRouter from "./routes/PortfolioRouter.js";
 
 const app = express();
+app.disable("x-powered-by");
+app.use((_req, res, next) => {
+  res.set("X-Content-Type-Options", "nosniff");
+  next();
+});
+app.use("/usuarios", express.json({ limit: "8kb" }), UsuarioRouter);
+app.use(protectWrites);
 app.use(["/projetos", "/semestres/projetos", "/semestre/projeto", "/trabalhos", "/bimestre/trabalho"], express.json({ limit: "6mb" }));
 app.use(express.json({ limit: "512kb" }));
-app.use("/usuarios", UsuarioRouter);
+
 app.use("/materias", MateriaRouter);
 app.use("/bimestres", BimestreRouter);
 app.use(PortfolioRouter);
@@ -47,14 +55,14 @@ app.use((error, req, res, next) => {
   if (error.type === "entity.too.large") {
     return res.status(413).json({ message: "O corpo da requisição excede o limite." });
   }
-  if ([400, 404, 409].includes(error.status)) {
+  if ([400, 401, 403, 404, 409, 429].includes(error.status)) {
     return res.status(error.status).json({ message: error.message, details: error.details });
   }
 
   if (req.path.split("/")[1] === "usuarios") {
-    console.error("Falha no cadastro de usuário:", error.name);
+    console.error("Falha na autenticação:", error.name);
   } else {
-    console.error(error);
+    console.error("Falha na API:", error.name);
   }
   return res.status(500).json({ message: "Erro interno do servidor." });
 });

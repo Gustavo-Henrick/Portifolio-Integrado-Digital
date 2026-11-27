@@ -85,17 +85,23 @@ Exemplo para `POST /projetos`:
 
 Cada matéria pode ter um registro por ano e número de semestre. A exclusão de matéria, bimestre ou semestre com registros vinculados retorna 409.
 
-## Cadastro de usuários
+## Conta de editor e sessão
 
-Envie um JSON para POST /usuarios com nome, email e senha (mínimo de 8 caracteres).
+Com a configuração do banco pronta, execute pelo terminal na pasta `Back-end`:
 
-    {"nome":"Aluno","email":"aluno@example.com","senha":"senha-de-exemplo"}
+```powershell
+npm run criar-editor -- Gustavo SEU_EMAIL
+```
 
-A resposta HTTP 201 contém id, nome e email. E-mails são normalizados para minúsculas e um cadastro duplicado retorna 409. A senha é armazenada somente como hash com salt. Esta rota faz o cadastro. Sessões e login dependem de uma implementação própria.
+Escolha uma senha única de pelo menos 16 caracteres quando o terminal pedir. A digitação fica oculta. O comando cria a conta ou troca sua senha, atribui permissão de edição e encerra as sessões anteriores. A API inicializa a tabela de sessões e migra contas existentes sem conceder edição automaticamente.
+
+O site usa `POST /usuarios/login`, `GET /usuarios/me` e `POST /usuarios/logout`. A autenticação usa um cookie HttpOnly e SameSite=Strict. O banco guarda um hash do token da sessão, com validade de oito horas. As gravações exigem uma sessão de editor e o cabeçalho `X-Portfolio-Request: 1`. A leitura dos registros do portfólio é pública.
+
+Em produção, execute o back-end com `NODE_ENV=production`, sirva o site via HTTPS e encaminhe `/api` na mesma origem do front-end. O cookie de produção usa Secure. Mantenha `DATABASE_URL` no ambiente do back-end.
 
 ## Portfólio individual do SESI
 
-Cadastre cada área do conhecimento em /materias com instituto SESI. Use o UUID da área nas rotas de conteúdo anual e nos bimestres. Para a identificação do aluno, o nome vem do cadastro em /usuarios. O conteúdo anual registra também série, turma, itinerário e reflexão pessoal.
+Cadastre cada área do conhecimento em /materias com instituto SESI. Use o UUID da área nas rotas de conteúdo anual e nos bimestres. A conta de editor é configurada pelo terminal. O conteúdo anual registra também série, turma, itinerário e reflexão pessoal.
 
 ### Seções anuais
 

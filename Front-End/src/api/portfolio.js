@@ -1,15 +1,23 @@
 const base = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
 const year = Number(import.meta.env.VITE_PORTFOLIO_YEAR || 2026)
 
-async function request(path, { method = 'GET', data, signal } = {}) {
+export async function request(path, { method = 'GET', data, signal } = {}) {
   const response = await fetch(base + path, {
     method,
+    credentials: 'same-origin',
     signal,
-    ...(data && { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
+    headers: {
+      ...(method !== 'GET' && { 'X-Portfolio-Request': '1' }),
+      ...(data && { 'Content-Type': 'application/json' }),
+    },
+    ...(data && { body: JSON.stringify(data) }),
   }).catch((error) => {
     if (error.name === 'AbortError') throw error
     throw new Error('Não foi possível conectar à API do portfólio.')
   })
+  if (response.status === 401 && !path.startsWith('/usuarios/')) {
+    window.dispatchEvent(new Event('portfolio:session-expired'))
+  }
   if (response.status === 204) return null
   const body = await response.json().catch(() => null)
   if (!response.ok || body === null) {

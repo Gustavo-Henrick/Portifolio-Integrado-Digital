@@ -26,4 +26,4 @@ If you are developing a production application, we recommend using TypeScript wi
 
 O ano interno dos registros é 2026 por padrão. Para trabalhar com outro ano aceito pela API, defina `VITE_PORTFOLIO_YEAR` no ambiente do front-end. Ao publicar, configure o servidor para encaminhar `/api` à API ou forneça `VITE_API_BASE_URL` durante a compilação. Uma API em outra origem precisa liberar essa origem via CORS.
 
-O login atual é demonstrativo e o back-end atual não tem autenticação de sessão ou autorização de escrita. Use a integração localmente até implementar a proteção das rotas.
+O login usa uma sessão da API. Configure a conta de editor conforme o README do back-end e use a mesma origem para o site e a API.
