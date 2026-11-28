@@ -14,53 +14,10 @@ function sessionToken(req) {
     .find((entry) => entry.startsWith(cookieName + "="))?.slice(cookieName.length + 1);
 }
 
-const localEditor = { id: "local-editor", nome: "Editor local" };
-const localSessions = new Map();
-
-function localHost(hostname) {
-  return ["localhost", "127.0.0.1", "::1", "[::1]"].includes(hostname);
-}
-
-function localUrl(value) {
-  if (!value || !URL.canParse(value)) return false;
-  const url = new URL(value);
-  return ["http:", "https:"].includes(url.protocol) && localHost(url.hostname);
-}
-
-function localRequest(req) {
-  return !secure && process.env.PORTFOLIO_LOCAL_ACCESS !== "false" &&
-    ["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(req.socket.remoteAddress) &&
-    localUrl("http://" + req.get("host")) &&
-    (!req.get("origin") || localUrl(req.get("origin")));
-}
-
-export function startLocalSession(req, res) {
-  if (!localRequest(req) || !localUrl(req.get("origin"))) throw erro(404, "Rota não encontrada.");
-  const now = Date.now();
-  for (const [key, expires] of localSessions) {
-    if (expires <= now) localSessions.delete(key);
-  }
-  const previous = sessionToken(req);
-  if (previous) localSessions.delete(hashToken(previous));
-  if (localSessions.size >= 128) throw erro(429, "Limite de sessões locais atingido.");
-
-  const token = randomBytes(32).toString("hex");
-  localSessions.set(hashToken(token), now + lifetime);
-  res.cookie(cookieName, token, { ...cookieOptions, maxAge: lifetime });
-  return localEditor;
-}
-
-
-
 async function activeSession(req) {
   const token = sessionToken(req);
   if (!token || !/^[a-f0-9]{64}$/.test(token)) return null;
   const key = hashToken(token);
-  const expires = localSessions.get(key);
-  if (expires !== undefined) {
-    if (expires > Date.now() && localRequest(req)) return { usuario: localEditor };
-    return null;
-  }
   return Sessao.findOne({
     where: { token_hash: key, expira_em: { [Op.gt]: new Date() } },
     include: [{ model: Usuario, as: "usuario", attributes: ["id", "nome"], where: { pode_editar: true } }],
@@ -118,7 +75,7 @@ export async function endSession(req, res) {
   const token = sessionToken(req);
   if (/^[a-f0-9]{64}$/.test(token ?? "")) {
     const key = hashToken(token);
-    if (!localSessions.delete(key)) await Sessao.destroy({ where: { token_hash: key } });
+    await Sessao.destroy({ where: { token_hash: key } });
   }
   res.clearCookie(cookieName, cookieOptions);
 }

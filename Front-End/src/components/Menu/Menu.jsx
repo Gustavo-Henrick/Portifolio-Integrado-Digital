@@ -1,12 +1,11 @@
 import { useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { login, logout, startLocalSession } from '../../api/session.js'
+import { login, logout } from '../../api/session.js'
 import './Style.css'
 
 function Menu({ signedIn, checking, onSignIn, onSignOut }) {
   const dialog = useRef(null)
   const [error, setError] = useState('')
-  const [entryError, setEntryError] = useState('')
   const [busy, setBusy] = useState(false)
 
   async function signIn(event) {
@@ -31,22 +30,6 @@ function Menu({ signedIn, checking, onSignIn, onSignOut }) {
       setBusy(false)
     }
   }
-
-  async function openEntry() {
-    if (busy) return
-    setBusy(true)
-    setEntryError('')
-    try {
-      onSignIn(await startLocalSession())
-    } catch (failure) {
-      if (failure.status === 404) dialog.current.showModal()
-      else setEntryError(failure.message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
-
 
   async function signOut() {
     if (busy) return
@@ -77,10 +60,10 @@ function Menu({ signedIn, checking, onSignIn, onSignOut }) {
       {signedIn ? (
         <button className="site-login" type="button" disabled={busy} onClick={signOut}>Sair</button>
       ) : (
-        <button className="site-login" type="button" disabled={checking || busy} onClick={openEntry}>{busy ? 'Entrando…' : 'Entrar'}</button>
+        <button className="site-login" type="button" disabled={checking || busy} onClick={() => dialog.current.showModal()}>Entrar</button>
       )}
 
-      {(entryError || (signedIn && error)) && <p role="alert">{entryError || error}</p>}
+      {signedIn && error && <p role="alert">{error}</p>}
       <dialog
         ref={dialog}
         className="login-dialog"
