@@ -30,6 +30,7 @@ function Links({ links, label }) {
 
 function ResourceText({ values, id, label, links, linkLabel }) {
   const text = values[id]
+  if (!text?.trim() && !safeLinks(links).length) return null
   return (
     <section className="senai-resource">
       <h4>{label}</h4>
@@ -37,7 +38,6 @@ function ResourceText({ values, id, label, links, linkLabel }) {
         ? <pre><code>{text}</code></pre>
         : <p className="senai-learned-text">{text}</p>)}
       <Links links={links} label={linkLabel} />
-      {!text && !safeLinks(links).length && <p>Nenhum registro.</p>}
     </section>
   )
 }
@@ -49,6 +49,10 @@ export default function SubjectPortfolio({ data, subject, semester, signedIn, re
   const values = data ?? {}
   const photos = values.fotos ?? []
   const visiblePhotos = photos.filter((photo) => imageTypes.includes(photo.tipo))
+
+  const hasVideos = safeLinks(values.videos).length > 0
+  const hasRecords = visiblePhotos.length > 0 || fields.some(([id]) => values[id]?.trim())
+    || linkFields.some(([id]) => safeLinks(values[id]).length > 0)
 
   function toggleEditing(next) {
     setEditing(next)
@@ -84,12 +88,12 @@ export default function SubjectPortfolio({ data, subject, semester, signedIn, re
     }
   }
 
-  if (!ready) return null
+  if (!ready || (!hasRecords && !signedIn)) return null
 
   return (
-    <section className="senai-resources" aria-labelledby="senai-resources-title">
+    <section className="senai-resources" aria-labelledby={hasRecords ? 'senai-resources-title' : undefined}>
       <div className="senai-project-heading">
-        <h3 id="senai-resources-title">Registros da matéria</h3>
+        {hasRecords && <h3 id="senai-resources-title">Registros da matéria</h3>}
         {signedIn && (
           <button type="button" className="sesi-edit-button" aria-expanded={editing} disabled={saving}
             onClick={() => toggleEditing(!editing)}>
@@ -98,27 +102,30 @@ export default function SubjectPortfolio({ data, subject, semester, signedIn, re
         )}
       </div>
 
-      <div className="senai-resource-grid">
-        <ResourceText values={values} id="codigos" label="Códigos produzidos" links={values.links_codigo} linkLabel="Ver código" />
-        <section className="senai-resource">
-          <h4>Registros fotográficos</h4>
-          {visiblePhotos.length ? (
-            <ul className="sesi-evidence-gallery" aria-label="Fotos da matéria">
-              {visiblePhotos.map((photo, index) => (
-                <li key={index}><img src={`data:${photo.tipo};base64,${photo.dados}`} alt={photo.nome} loading="lazy" /></li>
-              ))}
-            </ul>
-          ) : <p>Nenhuma foto registrada.</p>}
-        </section>
-        <section className="senai-resource">
-          <h4>Vídeos</h4>
-          <Links links={values.videos} label="Assistir ao vídeo" />
-          {!safeLinks(values.videos).length && <p>Nenhum vídeo registrado.</p>}
-        </section>
-        <ResourceText values={values} id="relatorios" label="Relatórios técnicos" links={values.links_relatorios} linkLabel="Abrir relatório" />
-        <ResourceText values={values} id="competencias" label="Competências desenvolvidas" />
-        <ResourceText values={values} id="autoavaliacao" label="Autoavaliação" />
-      </div>
+      {hasRecords && (
+        <div className="senai-resource-grid">
+          <ResourceText values={values} id="codigos" label="Códigos produzidos" links={values.links_codigo} linkLabel="Ver código" />
+          {visiblePhotos.length > 0 && (
+            <section className="senai-resource">
+              <h4>Registros fotográficos</h4>
+              <ul className="sesi-evidence-gallery" aria-label="Fotos da matéria">
+                {visiblePhotos.map((photo, index) => (
+                  <li key={index}><img src={`data:${photo.tipo};base64,${photo.dados}`} alt={photo.nome} loading="lazy" /></li>
+                  ))}
+              </ul>
+            </section>
+          )}
+          {hasVideos && (
+            <section className="senai-resource">
+              <h4>Vídeos</h4>
+            <Links links={values.videos} label="Assistir ao vídeo" />
+            </section>
+          )}
+          <ResourceText values={values} id="relatorios" label="Relatórios técnicos" links={values.links_relatorios} linkLabel="Abrir relatório" />
+          <ResourceText values={values} id="competencias" label="Competências desenvolvidas" />
+          <ResourceText values={values} id="autoavaliacao" label="Autoavaliação" />
+        </div>
+      )}
 
       {signedIn && editing && (
         <form className="sesi-form" onSubmit={submit}>

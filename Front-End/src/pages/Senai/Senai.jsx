@@ -144,11 +144,12 @@ function LearnedContent({ content, subject, semester, signedIn, ready, onEditing
     }
   }
 
+  if (!content?.trim() && !(signedIn && ready)) return null
+
   return (
-    <section className="senai-learned-content" aria-labelledby="senai-learned-title">
-      <h3 id="senai-learned-title">Conteúdo aprendido</h3>
-      {content && <p className="senai-learned-text">{content}</p>}
-      {ready && !content && <p>Nenhum conteúdo registrado nesta matéria.</p>}
+    <section className="senai-learned-content" aria-labelledby={content?.trim() ? 'senai-learned-title' : undefined}>
+      {content?.trim() && <h3 id="senai-learned-title">Conteúdo aprendido</h3>}
+      {content?.trim() && <p className="senai-learned-text">{content}</p>}
       {signedIn && ready && (
         <button type="button" className="sesi-edit-button" aria-expanded={editing} disabled={saving}
           onClick={() => changeEditing(!editing)}>
@@ -212,10 +213,9 @@ function SenaiProjects({ subject, semester, signedIn }) {
         onSaved={setMessage}
       />
 
-      <h3 className="senai-projects-title">Projetos feitos</h3>
+      {projects?.length > 0 && <h3 className="senai-projects-title">Projetos feitos</h3>}
       {loading && <p role="status">Carregando projetos…</p>}
       {error && <p role="alert">{error}</p>}
-      {projects?.length === 0 && <p className="senai-empty">Nenhum projeto nesta matéria para o {semester}º semestre.</p>}
       {projects?.length > 0 && (
         <ul className="senai-project-grid" aria-label="Projetos feitos">
           {projects.map((project) => (
