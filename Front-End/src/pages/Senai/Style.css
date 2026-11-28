@@ -52,7 +52,6 @@
 .senai-categories button {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
   background: #f3f6f6;
   text-align: left;
   font-size: 0.9rem;
@@ -60,7 +59,6 @@
 
 .senai-categories button:hover { background: #e3f3ef; }
 .senai-categories button[aria-pressed="true"] { background: #d5f3e9; color: #005b46; }
-.senai-category-icon { flex: 0 0 1.5rem; text-align: center; font-size: 1.15rem; }
 
 .senai-project {
   grid-area: project;
@@ -85,8 +83,7 @@
 }
 
 @media (max-width: 460px) {
-  .senai-categories button { gap: 0.28rem; padding-inline: 0.4rem; }
-  .senai-category-icon { flex-basis: 1.1rem; }
+  .senai-categories button { padding-inline: 0.4rem; }
 }
 .senai-project > button { margin: 0.65rem 0.4rem 0 0; }
 

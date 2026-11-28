@@ -11,6 +11,10 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "criar-editor": "node src/criarEditor.js"
+    "criar-editor": "node src/criarEditor.js",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^5.1.2"
   }
 }

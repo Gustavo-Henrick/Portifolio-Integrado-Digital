@@ -7,21 +7,21 @@ import './Style.css'
 
 const subjectsBySemester = {
   1: [
-    ['banco-de-dados', 'Banco de Dados', '▤'],
-    ['front-end', 'Codificação para Front-end', '▣'],
-    ['back-end', 'Codificação para Back-end', '‹/›'],
-    ['sustentabilidade', 'Sustentabilidade nos Processos Industriais', '◇'],
-    ['industria', 'Introdução à Indústria 4.0', '⚙'],
-    ['introducao', 'Introdução ao Desenvolvimento de Sistemas', '‹/›'],
+    ['banco-de-dados', 'Banco de Dados'],
+    ['front-end', 'Codificação para Front-end'],
+    ['back-end', 'Codificação para Back-end'],
+    ['sustentabilidade', 'Sustentabilidade nos Processos Industriais'],
+    ['industria', 'Introdução à Indústria 4.0'],
+    ['introducao', 'Introdução ao Desenvolvimento de Sistemas'],
   ],
   2: [
-    ['projeto-integrador', 'Projeto Integrador II', '◇'],
-    ['testes-front-end', 'Testes de Front-end', '▣'],
-    ['testes-back-end', 'Testes de Back-end', '‹/›'],
-    ['interacao-apis', 'Interação com APIs', '⇄'],
-    ['projeto-back-end', 'Projeto de Back-end', '◇'],
-    ['desenvolvimento-apis', 'Desenvolvimento de APIs', '⚙'],
-    ['projeto-front-end', 'Projeto de Front-end', '▣'],
+    ['projeto-integrador', 'Projeto Integrador II'],
+    ['testes-front-end', 'Testes de Front-end'],
+    ['testes-back-end', 'Testes de Back-end'],
+    ['interacao-apis', 'Interação com APIs'],
+    ['projeto-back-end', 'Projeto de Back-end'],
+    ['desenvolvimento-apis', 'Desenvolvimento de APIs'],
+    ['projeto-front-end', 'Projeto de Front-end'],
   ],
 }
 
@@ -320,7 +320,7 @@ function Senai({ signedIn }) {
         </div>
 
         <aside className="senai-categories" aria-label="Matérias do semestre">
-          {subjects.map(([id, title, icon]) => (
+          {subjects.map(([id, title]) => (
             <button
               key={id}
               type="button"
@@ -328,7 +328,6 @@ function Senai({ signedIn }) {
               aria-controls="senai-project"
               onClick={() => setSelectedBySemester((previous) => ({ ...previous, [semester]: id }))}
             >
-              <span aria-hidden="true" className="senai-category-icon">{icon}</span>
               {title}
             </button>
           ))}

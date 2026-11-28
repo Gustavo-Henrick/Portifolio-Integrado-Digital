@@ -12,7 +12,7 @@ function Home() {
     <main className="home">
       <section className="home-intro">
         <div>
-          <p className="home-greeting">Olá, eu sou o Gustavo! <span aria-hidden="true">👋</span></p>
+          <p className="home-greeting">Olá, eu sou o Gustavo! <span aria-hidden="true"></span></p>
           <h1>Meu ano de<br />aprendizagem</h1>
           <p className="home-description">
             Explore os projetos, atividades e conquistas do meu ano letivo, organizados por SESI e SENAI.
