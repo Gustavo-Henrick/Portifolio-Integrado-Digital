@@ -131,7 +131,8 @@ function SesiEntry({ section, storageKey, signedIn, areaName, period }) {
       }
       await saveSesi(areaName, section.id, period, values)
       setEditing(false)
-      setMessage('Registro salvo. Atualize a visualização para ver o registro.')
+      setMessage('Registro salvo.')
+      reload()
     } catch (failure) {
       setMessage(failure.message)
     } finally {

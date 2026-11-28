@@ -80,7 +80,7 @@ export default function SubjectPortfolio({ data, subject, semester, signedIn, re
       ])
       await saveSenaiSections(subject, semester, sections)
       toggleEditing(false)
-      onSaved('Registros salvos. Atualize a visualização para ver as alterações.')
+      onSaved('Registros salvos.')
     } catch (failure) {
       setError(failure.message)
     } finally {

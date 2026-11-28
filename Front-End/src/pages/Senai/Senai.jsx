@@ -136,7 +136,7 @@ function LearnedContent({ content, subject, semester, signedIn, ready, onEditing
     try {
       await saveSenaiContent(subject, semester, value)
       changeEditing(false)
-      onSaved('Conteúdo salvo. Atualize a visualização para ver o registro.')
+      onSaved('Conteúdo salvo.')
     } catch (error) {
       setMessage(error.message)
     } finally {
@@ -182,6 +182,12 @@ function SenaiProjects({ subject, semester, signedIn }) {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
+  function recordSaved(text) {
+    setMessage(text)
+    reload()
+  }
+
+
   async function submit(event) {
     event.preventDefault()
     if (saving) return
@@ -193,7 +199,7 @@ function SenaiProjects({ subject, semester, signedIn }) {
       const anexos = await readAttachments(new FormData(form).getAll('anexos'))
       await saveSenai(subject, semester, { ...values, anexos })
       setAdding(false)
-      setMessage('Projeto salvo. Atualize a visualização para ver o registro.')
+      recordSaved('Projeto salvo.')
     } catch (failure) {
       setMessage(failure.message)
     } finally {
@@ -210,7 +216,7 @@ function SenaiProjects({ subject, semester, signedIn }) {
         signedIn={signedIn}
         ready={!loading && !error}
         onEditingChange={setEditingContent}
-        onSaved={setMessage}
+        onSaved={recordSaved}
       />
 
       {projects?.length > 0 && <h3 className="senai-projects-title">Projetos feitos</h3>}
@@ -282,7 +288,7 @@ function SenaiProjects({ subject, semester, signedIn }) {
         signedIn={signedIn}
         ready={!loading && !error}
         onEditingChange={setEditingResources}
-        onSaved={setMessage}
+        onSaved={recordSaved}
       />
 
       {message && <p role="status">{message}</p>}
