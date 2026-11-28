@@ -187,3 +187,6 @@ export function deleteSenaiProject(id) {
   return request(`/projetos/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }
 
+export function deleteSesiActivity(id) {
+  return request(`/trabalhos/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}

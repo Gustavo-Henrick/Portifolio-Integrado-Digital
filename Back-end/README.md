@@ -135,3 +135,5 @@ Use GET /materias/:id/portfolio/:ano para ler e PUT no mesmo caminho para editar
 - **Projetos e trabalhos desenvolvidos**. No POST /trabalhos ou PUT /trabalhos/:id, envie evidencias como uma lista de URLs de imagens, vídeos ou documentos. Uma lista vazia remove os links. Os arquivos são hospedados fora da API.
 
 As rotas de semestres e projetos continuam disponíveis para o SENAI.
+
+No computador local, **Entrar** libera uma sessão temporária de edição sem senha. Para desativar esse modo, configure `PORTFOLIO_LOCAL_ACCESS=false`. Em produção, a entrada local fica desativada e o login exige uma conta.

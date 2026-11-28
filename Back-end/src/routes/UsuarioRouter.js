@@ -2,7 +2,7 @@ import { Router } from "express";
 import { Usuario } from "../model/index.js";
 import { erro } from "../controllers/validacao.js";
 import { verifyPassword } from "../auth/password.js";
-import { endSession, protectMutation, requireEditor, startSession } from "../auth/session.js";
+import { endSession, protectMutation, requireEditor, startLocalSession, startSession } from "../auth/session.js";
 
 const router = Router();
 const attempts = new Map();
@@ -52,6 +52,12 @@ router.post("/login", protectMutation, limitLogin, async (req, res) => {
     activeChecks--;
   }
 });
+
+router.post("/entrada-local", protectMutation, (req, res) => {
+  res.json(startLocalSession(req, res));
+});
+
+
 
 router.get("/me", requireEditor, (req, res) => {
   const { id, nome } = req.portfolioSession.usuario;

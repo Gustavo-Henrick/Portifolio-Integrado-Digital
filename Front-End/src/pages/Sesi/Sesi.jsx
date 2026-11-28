@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { getSesi, saveSesi } from '../../api/portfolio.js'
+import { deleteSesiActivity, getSesi, saveSesi } from '../../api/portfolio.js'
 import { usePortfolio } from '../../api/usePortfolio.js'
 import { imageTypes, readAttachments } from '../../api/attachments.js'
 import './style.css'
@@ -88,11 +88,30 @@ function SesiEntry({ section, storageKey, signedIn, areaName, period }) {
   const { loading, data, error, reload } = usePortfolio(getSesi, areaName, section.id, period)
   const [localRecord] = useState(() => readStored(storageKey))
   const [saving, setSaving] = useState(false)
+  const [deletingId, setDeletingId] = useState(null)
   const saved = data ?? localRecord
   const [editing, setEditing] = useState(false)
   const [message, setMessage] = useState('')
   const projects = section.repeatable && Array.isArray(saved) ? saved : []
   const values = section.repeatable ? [] : section.fields.filter(([id]) => saved?.[id])
+
+  async function removeActivity(id) {
+    if (saving) return
+    setSaving(true)
+    setMessage('')
+    try {
+      await deleteSesiActivity(id)
+      setDeletingId(null)
+      setMessage('Atividade excluída.')
+      reload()
+    } catch (failure) {
+      setMessage(failure.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+
 
   async function submit(event) {
     event.preventDefault()
@@ -157,7 +176,7 @@ function SesiEntry({ section, storageKey, signedIn, areaName, period }) {
       {projects.length > 0 && (
         <ul className="sesi-activities">
           {projects.map((project, index) => (
-            <li key={index}>
+            <li key={project.id ?? index}>
               <h3>{project.titulo}</h3>
               {project.descricao && <p>{project.descricao}</p>}
               {project.imagens?.length > 0 && (
@@ -172,6 +191,23 @@ function SesiEntry({ section, storageKey, signedIn, areaName, period }) {
               {(project.evidencias ?? [project.evidencia]).filter((url) => /^https?:\/\//i.test(url)).map((url, index) => (
                 <a key={index} href={url}>Abrir evidência {index + 1} de {project.titulo}</a>
               ))}
+              {signedIn && project.id && (deletingId === project.id ? (
+                <div className="sesi-activity-actions">
+                  <p>Excluir esta atividade e suas imagens?</p>
+                  <button type="button" className="senai-delete-button" disabled={saving}
+                    onClick={() => removeActivity(project.id)}>Confirmar exclusão</button>
+                  <button type="button" className="sesi-edit-button" disabled={saving}
+                    onClick={() => setDeletingId(null)}>Cancelar</button>
+                </div>
+              ) : (
+                <div className="sesi-activity-actions">
+                  <button type="button" className="senai-delete-button" disabled={saving || editing}
+                    aria-label={`Excluir atividade: ${project.titulo}`} onClick={() => setDeletingId(project.id)}>
+                    Excluir atividade
+                  </button>
+                </div>
+              ))}
+
             </li>
           ))}
         </ul>

@@ -12,3 +12,6 @@ export function logout() {
   return request('/usuarios/logout', { method: 'POST' })
 }
 
+export function startLocalSession() {
+  return request('/usuarios/entrada-local', { method: 'POST' })
+}
